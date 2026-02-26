@@ -39,13 +39,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return true;
   }
   if (msg && msg.type === 'downloadImages' && Array.isArray(msg.images)) {
-    const folder = msg.folder || '';
+    // Sanitize folder to be a simple subfolder name, removing slashes and trimming.
+    const folder = (msg.folder || '').trim().replace(/[\\/]/g, '');
     const images = msg.images;
     const results = [];
     (async () => {
       for (const u of images) {
         try {
-          const filename = (folder ? (folder.replace(/(^\/|\/$)/g,'') + '/') : '') + (new URL(u).pathname.split('/').filter(Boolean).pop() || 'image');
+          const rawFilename = new URL(u).pathname.split('/').filter(Boolean).pop() || 'image';
+          const sanitizedFilename = rawFilename.replace(/[^a-zA-Z0-9._-]/g, '_');
+          const filename = (folder ? folder + '/' : '') + sanitizedFilename;
           const id = await chrome.downloads.download({ url: u, filename, conflictAction: 'uniquify' });
           results.push({ url: u, id });
         } catch (e) {
@@ -63,19 +66,33 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
-chrome.action.onClicked.addListener((tab) => {
+chrome.action.onClicked.addListener(async (tab) => {
   if (!tab?.id) return;
+  const defaults = {
+    extractedClass: '.grid-x.image-grid-wrapper',
+    imageClass: '.cell.small-6.image-item',
+  };
+  let options = defaults;
+  try {
+    if (chrome.storage && chrome.storage.sync) {
+      options = await chrome.storage.sync.get(defaults);
+    }
+  } catch (e) {
+    recordError(e);
+  }
+
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
-    func: () => {
+    args: [options.extractedClass, options.imageClass],
+    func: (extractedClass, imageClass) => {
       function absoluteUrl(url) {
         try { return new URL(url, location.href).href; } catch(e) { return null; }
       }
-      const el = document.querySelector('.grid-x.image-grid-wrapper');
+      const el = extractedClass ? document.querySelector(extractedClass) : null;
       const html = el ? el.outerHTML : '';
       const imgs = new Set();
       // Collect images only from .cell.small-6.image-item elements when present
-      const cells = Array.from(document.querySelectorAll('.cell.small-6.image-item'));
+      const cells = imageClass ? Array.from(document.querySelectorAll(imageClass)) : [];
       if (cells.length) {
         cells.forEach(cell => {
           // If the cell contains anchor(s) with href, prefer those hrefs as the image sources.

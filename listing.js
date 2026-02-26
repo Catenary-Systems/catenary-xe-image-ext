@@ -38,10 +38,77 @@ document.addEventListener('DOMContentLoaded', async () => {
     const data = await storageGet('lastExtract');
     extract = (data && data.lastExtract) || { html: '', images: [] };
   }
-  if (!extract.html && !extract.images.length) {
-    status.textContent = 'No extracted content available. Make sure you opened the extension via the toolbar icon.';
+
+  if (extract.images && extract.images.length > 0) {
+    status.textContent = `Displaying ${extract.images.length} extracted images.`;
+    content.innerHTML = ''; // clear default
+    const imageGrid = document.createElement('div');
+    imageGrid.style.display = 'grid';
+    imageGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(150px, 1fr))';
+    imageGrid.style.gap = '10px';
+    extract.images.forEach(imgUrl => {
+      const imgWrapper = document.createElement('div');
+      imgWrapper.className = 'image-grid-wrapper';
+      imgWrapper.style.position = 'relative';
+      imgWrapper.style.paddingBottom = '100%'; // 1:1 aspect ratio
+      const img = document.createElement('img');
+      img.src = imgUrl;
+      img.title = imgUrl;
+      img.style.position = 'absolute';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '4px';
+      imgWrapper.appendChild(img);
+      imageGrid.appendChild(imgWrapper);
+
+      imgWrapper.addEventListener('click', () => {
+        const modalOverlay = document.createElement('div');
+        modalOverlay.className = 'modal-overlay';
+
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content';
+
+        const modalImg = document.createElement('img');
+        modalImg.src = imgUrl;
+
+        const modalClose = document.createElement('div');
+        modalClose.className = 'modal-close';
+        modalClose.innerHTML = '&times;';
+
+        modalContent.appendChild(modalImg);
+        modalContent.appendChild(modalClose);
+        modalOverlay.appendChild(modalContent);
+        document.body.appendChild(modalOverlay);
+
+        // Animate in
+        requestAnimationFrame(() => {
+          modalOverlay.classList.add('visible');
+        });
+
+        const closeModal = () => {
+          modalOverlay.classList.remove('visible');
+          modalOverlay.addEventListener('transitionend', () => {
+            if (modalOverlay.parentNode) {
+              modalOverlay.parentNode.removeChild(modalOverlay);
+            }
+          }, { once: true });
+        };
+
+        modalClose.addEventListener('click', (e) => { e.stopPropagation(); closeModal(); });
+        modalOverlay.addEventListener('click', (e) => {
+          if (e.target === modalOverlay) closeModal();
+        });
+      });
+    });
+    content.appendChild(imageGrid);
+  } else if (extract.html) {
+    status.textContent = 'No images found, showing raw extracted HTML.';
+    content.innerHTML = extract.html;
+  } else {
+    status.textContent = 'No extracted content available. Make sure you run the extension on a page with content.';
+    content.innerHTML = '<p>No extracted content.</p>';
   }
-  content.innerHTML = extract.html || '<p>No extracted content.</p>';
 
   openBtn.addEventListener('click', () => {
     try {

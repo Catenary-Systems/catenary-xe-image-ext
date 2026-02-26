@@ -3,8 +3,63 @@
 <title>Extracted XE Modal - Listing</title>
 <style>
   body{font-family:Arial,Helvetica,sans-serif;padding:16px}
-  .container{border:1px solid #ddd;padding:12px;margin-top:8px}
-  button{padding:8px 12px;font-size:14px;margin-right:8px}
+  .container{border:1px solid #eee;padding:12px;margin-top:8px; border-radius: 8px; background-color: aliceblue;}
+  button{padding:8px 12px;font-size:14px;margin-right:8px;background-color: aliceblue; color: black; border-radius: 8px; border: 1px solid #eee; cursor: pointer; transition: all 0.3s ease-in-out ;}
+  button:hover{background-color: rgb(235, 243, 250); scale: 1.02;}
+  .image-grid-wrapper { cursor: pointer; transition: transform 0.2s ease-in-out; }
+  .image-grid-wrapper:hover { transform: scale(1.05); }
+
+  /* Modal styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.25s ease-in-out;
+    pointer-events: none;
+  }
+  .modal-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .modal-content {
+    position: relative;
+    transform: scale(0.8);
+    transition: transform 0.25s ease-in-out;
+  }
+  .modal-overlay.visible .modal-content {
+    transform: scale(1);
+  }
+  .modal-content img {
+    max-width: 90vw;
+    max-height: 90vh;
+    display: block;
+    border-radius: 4px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  }
+  .modal-close {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    background: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    line-height: 28px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    user-select: none;
+  }
 </style>
 <div>
   <button id="openBtn">Open content</button>

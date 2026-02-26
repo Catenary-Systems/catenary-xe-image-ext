@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "XE Modal Extractor",
   "version": "1.0",
-  "description": "Extracts the element with class 'grid-x image-grid-wrapper' and opens it in a new tab.",
-  "permissions": ["scripting", "tabs", "activeTab", "downloads"],
+  "description": "Extracts a configured element and its images from a page and opens it in a new tab.",
+  "permissions": ["scripting", "tabs", "activeTab", "downloads", "storage"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
@@ -13,6 +13,6 @@
     "open_in_tab": true
   },
   "action": {
-    "default_title": "Extract grid-x image-grid-wrapper"
+    "default_title": "Extract content"
   }
 }
