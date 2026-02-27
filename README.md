@@ -1,17 +1,49 @@
- # XE Modal Extractor
+# xe.gr Image Extractor
+### Google chrome extension
 
-Install locally in Chrome/Chromium:
+![Last Commit](https://img.shields.io/github/last-commit/Catenary-Systems/catenary-xe-image-ext)
+![Commits](https://img.shields.io/github/commit-activity/y/Catenary-Systems/catenary-xe-image-ext/main)
+![Codesize](https://img.shields.io/github/languages/code-size/Catenary-Systems/catenary-xe-image-ext)
 
-1. Open `chrome://extensions` and enable "Developer mode".
-2. Click "Load unpacked" and select the folder `xe-modal-extractor` inside this repository.
- 3. Visit a page that contains elements you want to extract.
- 4. Click the extension icon in the toolbar. A new "listing" tab will open.
+Extracts images from a listing in xe.gr using html tags to isolate listing images from extra junk
 
- The listing page displays a grid of extracted images. From this page you can:
- - **Download images**: Downloads all found images, placing them in a subfolder if one is configured in the extension's options.
- - **Open content**: Opens the raw extracted HTML in a new tab.
- - **View logs**: Shows the last recorded error, for debugging.
+### Features:
+- Extract all images from tags
+- Download them
+- [Options](#options) menu to change extracted tag
 
-Notes:
-- The selectors used to find the content container and the images within it can be configured on the extension's options page.
-- The extractor grabs the container's `outerHTML`; original page styles may not be fully applied.
+##### Notes:
+- The extractor grabs the element's outerHTML; page styles from the original site may not be included.
+- If no element is found, a message tab will be opened.
+
+### Options:
+
+- Change download subfolder _(currently broken)_
+- Change extracted outer tag
+- Change extracted inner tag
+
+### Install:
+
+##### Step 1:
+
+- Download the code from github
+- Extract the zip file
+- Put the folder somewhere **Safe** where it will not be deleted
+
+##### Step 2:
+
+- Open Chrome or Chromium (or any Chromium based browser)
+- Go into the extensions page
+- Turn on `Developer mode` toggle
+- Click the `Load Unpacked` Button
+
+##### And you're done
+
+### Usage:
+
+- Go on a **xe.gr** listing containing images
+- Click an image to go on a view of all images _(important)_
+> It opens a new tab with a preview of all images in a grid
+
+> You can also click the `Download All Images` button to download them
+
